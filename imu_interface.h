@@ -5,12 +5,12 @@
 #include <stdint.h>
 
 typedef struct {
-  int16_t omega_dps[3];
-  int16_t acc_dps[3];
-  int16_t mag_gauss[3];
+  float omega_dps[3];
+  float acc_g[3];
+  float mag_gauss[3];
 } IMU_TypeDef;
 
-void imu_init(void * param);
+uint8_t imu_init(void * param);
 IMU_TypeDef * imu_read();
 
 #endif

@@ -18,7 +18,7 @@ uint8_t rx_address[] = { 1, 2, 3, 4, 0 };
 Radio_pkg radio_data;
 Nrf_radio_pkg rx_data;
 
-void radio_init(void * params) {
+uint8_t radio_init(void * params) {
 
   pinMode(CE_PIN, OUTPUT);
   pinMode(CSN_PIN, OUTPUT);
@@ -28,7 +28,9 @@ void radio_init(void * params) {
 
   if(!initRadio(rx_address, BITRATE2MBPS, 100)) {
     //Error
+    return INIT_ERROR;
   }
+  return INIT_OK;
 }
 Radio_pkg * radio_read() {
 

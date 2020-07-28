@@ -19,7 +19,7 @@ typedef struct {
 
 const Radio_pkg flushed_pkg = {1000,1500,1500,1500,0};
 
-void radio_init(void * params);
+uint8_t radio_init(void * params);
 Radio_pkg * radio_read();
 
 

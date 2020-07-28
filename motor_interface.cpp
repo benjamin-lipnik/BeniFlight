@@ -5,7 +5,7 @@ uint8_t motor_pins[4] = {MOTOR_PIN_A, MOTOR_PIN_B, MOTOR_PIN_C, MOTOR_PIN_D};
 volatile uint32 * timer_registers[4] = {&TIMER4_BASE->CCR1, &TIMER4_BASE->CCR2, &TIMER4_BASE->CCR3, &TIMER4_BASE->CCR4};
 uint16_t motor_power_values[4] = {1000,1000,1000,1000};
 
-void motors_init(void * param) {
+uint8_t motors_init(void * param) {
     TIMER4_BASE->CR1 = TIMER_CR1_CEN | TIMER_CR1_ARPE;
     TIMER4_BASE->CR2 = 0;
     TIMER4_BASE->SMCR = 0;
@@ -24,12 +24,15 @@ void motors_init(void * param) {
     pinMode(motor_pins[1], PWM);
     pinMode(motor_pins[2], PWM);
     pinMode(motor_pins[3], PWM);
+
+    return INIT_OK;
 }
 void motors_stop() {
-  TIMER4_BASE->CCR1 = 1000;
-  TIMER4_BASE->CCR2 = 1000;
-  TIMER4_BASE->CCR3 = 1000;
-  TIMER4_BASE->CCR4 = 1000;
+  motor_assign_power(0, 1000);
+  motor_assign_power(1, 1000);
+  motor_assign_power(2, 1000);
+  motor_assign_power(3, 1000);
+  motors_apply();
 }
 void motor_assign_power(uint8_t motor, uint16_t power) {
   if(power > 2100) //failsafe

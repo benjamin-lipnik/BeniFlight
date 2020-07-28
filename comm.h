@@ -1,10 +1,13 @@
 #ifndef COMM_H
 #define COMM_H
 
+#include <stdint.h>
 #include "configuration.h"
 
-void print_init(void * params);
+uint8_t print_init(void * params);
 void print (char * str);
 void println(char * str);
+
+char * serial_reader();
 
 #endif

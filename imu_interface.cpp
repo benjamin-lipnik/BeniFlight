@@ -1,5 +1,4 @@
 #include "imu_interface.h"
-#include "configuration.h"
 #include <Arduino.h>
 #include <Wire.h>
 
@@ -28,7 +27,7 @@ static uint8_t read_reg(uint8_t address, uint8_t reg) {
   return I2C.read();
 }
 
-void imu_init(void * param) {
+uint8_t imu_init(void * param) {
 
   I2C.begin();
   delay(10);
@@ -45,20 +44,33 @@ void imu_init(void * param) {
   write_reg(MPU6050_ADDRESS, MPU_REG_ACCEL_CONFIG, 0x10); //AFS_SEL
   write_reg(MPU6050_ADDRESS, MPU_REG_CONFIG,       0x03); //LOW PASS FILTER (DLPF_CFG)
 
-}
-IMU_TypeDef * imu_read() {
+  uint8_t check = read_reg(MPU6050_ADDRESS, MPU_REG_GYRO_CONFIG) == 0x08;
+  check &= read_reg(MPU6050_ADDRESS, MPU_REG_ACCEL_CONFIG) == 0x10;
+  check &= read_reg(LSM303_MAG_ADDRESS, 0x01) == (0b111 << 5);
 
+  if(check)
+    return INIT_OK;
+  return INIT_ERROR;
+}
+IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi zdej pac ne ljubi, tak da TODO :)
+
+  int16_t value = 0;
   for(int i = 0; i < 3; i++) {
     //Mag
-    imu_data.mag_gauss[i] = (read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i) << 8 | read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i + 1));
+    value = 0;
+    value = read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i) << 8 | read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i + 1);
+    imu_data.mag_gauss[i] = (float)value; // tu je se treba normalizirat vrednosti, ko bo cajt
 
     //acc
-    imu_data.acc_dps[i] = (read_reg(MPU6050_ADDRESS, 0x3B + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x3B + 2*i + 1));
+    value = 0;
+    value = read_reg(MPU6050_ADDRESS, 0x3B + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x3B + 2*i + 1);
+    imu_data.acc_g[i] = (float)value / 4096.0f;
 
     //gyro
-    imu_data.omega_dps[i] = (read_reg(MPU6050_ADDRESS, 0x43 + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x43 + 2*i + 1));
+    value = 0;
+    value = read_reg(MPU6050_ADDRESS, 0x43 + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x43 + 2*i + 1);
+    imu_data.omega_dps[i] = (float)value / 65.5f;
   }
-
 
   return &imu_data;
 }

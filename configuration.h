@@ -34,5 +34,15 @@
 #define MOTOR_C_INDEX 2
 #define MOTOR_D_INDEX 3
 
+/*LEDS*/
+
+#define BLUE_LED_PIN  PB12
+#define RED_LED_PIN   PB13
+#define MCU_LED_PIN   PC13
+
+/*GLOBAL CONSTANTS, IGNORE*/
+#define INIT_OK    0
+#define INIT_ERROR 1
+
 
 #endif
