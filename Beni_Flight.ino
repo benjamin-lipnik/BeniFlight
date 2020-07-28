@@ -2,50 +2,53 @@
 //interfaci za motorje, imu, radio,...
 #include "comm.h"
 #include "imu_interface.h"
-#include "RF_RX.h"
+#include "radio_interface.h"
+#include "motor_interface.h"
 
 static char str[100];
-typedef struct {
-  uint8_t power;
-
-  uint8_t roll;
-  uint8_t pitch;
-  uint8_t yaw;
-
-  uint8_t arm;
-}Radio_pkg;
-
-Radio_pkg rc_pkg;
-uint8_t rx_address[] = { 1, 2, 3, 4, 0 };
 
 void setup() {
   pinMode(PC13, OUTPUT);
+
   print_init(NULL);
   imu_init(NULL);
-
-  preInit(NULL);
-  if(!initRadio(rx_address, BITRATE2MBPS, 100)) {
-    while(1) {
-      print((char *)"Radio not working.\n\r");
-      delay(100);
-    }
-  }
+  radio_init(NULL);
+  motors_init(NULL);
 
   println((char *)"OK!");
 }
 
 void loop() {
 
-  readData(&rc_pkg, sizeof(rc_pkg));
-  sprintf(str, "p: %u, r: %d, t: %u, y: %u\n\r", rc_pkg.power, rc_pkg.roll, rc_pkg.pitch, rc_pkg.yaw);
-  print(str);
+  /*TIMING*/
+  static unsigned long loop_micros = 0;
+  static unsigned long loop_millis = 0;
+  static unsigned long delta_micros = 0;
 
-  /*
+  delta_micros = loop_micros;//last_micros
+  loop_micros  = micros();
+  delta_micros = loop_micros - delta_micros; //last - new micros
+  loop_millis  = loop_micros * 0.001;
+
+  if(delta_micros > 4000) { //too long
+    //error
+  }
+  /*IMU*/
+
+  //Preberemo podatke z IMU in jih preracunamo v uporabne vrednosti
   IMU_TypeDef * imu_data = imu_read();
-  sprintf(str, "X: %d, Y: %d, Z: %d\n\r", imu_data->mag_gauss[0], imu_data->mag_gauss[1], imu_data->mag_gauss[2]);
-  print(str);
-  */
+  
 
+  /*RADIO*/
 
-  delay(50);
+  //Pollamo za podatke od dalinca in gledamo, ce nam je zanjkal signala
+  //Gledamo tudi ce smo signal dobili nazaj.
+  Radio_pkg * radio_data = radio_read();
+
+  /*STABILIZACIJA*/
+
+  //ce je vseeee ok pol stabiliziramo dron, in poslusamo dalinc
+  //ce ni signala pol stabiliziramo dron in padamo proti tlem
+  //ce je vse narobe ugasnemo motorje in vklopimo padalo ce ga mamo in ustavimo program
+
 }

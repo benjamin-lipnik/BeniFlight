@@ -19,11 +19,6 @@ inline void delay_milliseconds(unsigned long milliseconds) {
 
 void preInit (void * spi_handle) {
 	//hspi = (SPI_HandleTypeDef *)spi_handle;
-  pinMode(CE_PIN, OUTPUT);
-  pinMode(CSN_PIN, OUTPUT);
-  
-  SPI.setClockDivider(SPI_CLOCK_DIV4);
-  SPI.begin();
 }
 
 /*COMMUNICATION*/
