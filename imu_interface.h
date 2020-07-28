@@ -2,11 +2,12 @@
 #define IMU_INTERFACE_H
 
 #include "configuration.h"
+#include <stdint.h>
 
 typedef struct {
-  float omega_dps[3];
-  float acc_dps[3];
-  float mag_gauss[3];
+  int16_t omega_dps[3];
+  int16_t acc_dps[3];
+  int16_t mag_gauss[3];
 } IMU_TypeDef;
 
 void imu_init(void * param);
