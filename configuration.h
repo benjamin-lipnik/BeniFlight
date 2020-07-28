@@ -13,10 +13,17 @@
 
 /*IMU*/
 
+#define GYRO_INVERT_X
+#define GYRO_INVERT_Y
+#define GYRO_INVERT_Z
 
-#define X_INDEX 0
+//#define ACC_INVERT_X
+//#define ACC_INVERT_Y
+//#define ACC_INVERT_Z
+
+#define X_INDEX 2
 #define Y_INDEX 1
-#define Z_INDEX 2
+#define Z_INDEX 0
 
 #define ROLL_INDEX  X_INDEX
 #define PITCH_INDEX Y_INDEX
@@ -41,8 +48,8 @@
 #define MCU_LED_PIN   PC13
 
 /*GLOBAL CONSTANTS, IGNORE*/
-#define INIT_OK    0
-#define INIT_ERROR 1
+#define INIT_OK    1
+#define INIT_ERROR 0
 
 
 #endif

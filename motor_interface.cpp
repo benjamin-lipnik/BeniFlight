@@ -1,8 +1,9 @@
 #include "motor_interface.h"
 #include <Arduino.h>
 
-uint8_t motor_pins[4] = {MOTOR_PIN_A, MOTOR_PIN_B, MOTOR_PIN_C, MOTOR_PIN_D};
+const uint8_t motor_pins[4] = {MOTOR_PIN_A, MOTOR_PIN_B, MOTOR_PIN_C, MOTOR_PIN_D};
 volatile uint32 * timer_registers[4] = {&TIMER4_BASE->CCR1, &TIMER4_BASE->CCR2, &TIMER4_BASE->CCR3, &TIMER4_BASE->CCR4};
+
 uint16_t motor_power_values[4] = {1000,1000,1000,1000};
 
 uint8_t motors_init(void * param) {

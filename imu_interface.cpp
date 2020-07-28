@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define MPU6050_ADDRESS (uint8_t)(0x68)
+#define MPU6050_ADDRESS     (uint8_t)(0x68)
 #define LSM303_MAG_ADDRESS  (uint8_t)(0b00011110)
 
 #define MPU_REG_CONFIG       0x1A
@@ -69,8 +69,38 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
     //gyro
     value = 0;
     value = read_reg(MPU6050_ADDRESS, 0x43 + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x43 + 2*i + 1);
+
     imu_data.omega_dps[i] = (float)value / 65.5f;
   }
+
+  /*GYRO INVERTERS*/
+
+#ifdef GYRO_INVERT_X
+  imu_data.omega_dps[X_INDEX] *= -1;
+#endif
+
+#ifdef GYRO_INVERT_Y
+  imu_data.omega_dps[Y_INDEX] *= -1;
+#endif
+
+#ifdef GYRO_INVERT_Z
+  imu_data.omega_dps[Z_INDEX] *= -1;
+#endif
+
+  /*ACC INVERTERS*/
+
+#ifdef ACC_INVERT_X
+  imu_data.acc_g[X_INDEX] *= -1;
+#endif
+
+#ifdef ACC_INVERT_Y
+  imu_data.acc_g[Y_INDEX] *= -1;
+#endif
+
+#ifdef ACC_INVERT_Z
+  imu_data.acc_g[Z_INDEX] *= -1;
+#endif
+
 
   return &imu_data;
 }
