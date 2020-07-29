@@ -1,8 +1,6 @@
 #ifndef PID_H
 #define PID_H
 
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct {

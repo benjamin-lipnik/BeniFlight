@@ -19,7 +19,7 @@ uint8_t motors_init(void * param) {
     TIMER4_BASE->ARR = 5000;
     TIMER4_BASE->DCR = 0;
 
-    motors_apply();
+    motors_stop();
 
     pinMode(motor_pins[0], PWM);
     pinMode(motor_pins[1], PWM);

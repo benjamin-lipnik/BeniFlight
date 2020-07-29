@@ -8,8 +8,8 @@
 // 180 / PI
 #define RAD_TO_DEG  (57.295779513f)
 
-World_data world_data;
-Calculated_IMU_Data calc_data = {&world_data};
+static World_data world_data;
+static Calculated_IMU_Data calc_data = {&world_data};
 
 Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time) {
 
@@ -38,8 +38,11 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   return &calc_data;
 }
 
-uint16_t motor_powers[4];
+static uint16_t motor_powers[4];
 uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * radio_data, PIDProfile * pid_profiles, float delta_time) {
+
+  if(!radio_data)
+    radio_data = (Radio_pkg *)&flushed_pkg;
 
   if(!(radio_data->buttons & (1<<ARM_BIT))) {
     //UNARMED
@@ -54,9 +57,9 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
     return motor_powers;
   }
 
-  float pid_roll_setpoint  = map(radio_data->roll,  1000, 2000, -100, 100);
-  float pid_pitch_setpoint = map(radio_data->pitch, 1000, 2000, -100, 100);
-  float pid_yaw_setpoint   = map(radio_data->yaw,   1000, 2000, -100, 100);
+  float pid_roll_setpoint  = map(radio_data->roll,  1000, 2000, -100,  100);
+  float pid_pitch_setpoint = map(radio_data->pitch, 1000, 2000,  100, -100);
+  float pid_yaw_setpoint   = map(radio_data->yaw,   1000, 2000, -100,  100);
 
 #ifdef ENABLE_AUTOLEVEL
   pid_roll_setpoint  -= imu_data->world_data->roll_angle  * AUTOLEVEL_STRENGTH;
@@ -74,10 +77,10 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
 
   radio_data->power *= MAX_USER_POWER;
 
-  motor_powers[MOTOR_A_INDEX] = radio_data->power + roll_correction + pitch_correction;
-  motor_powers[MOTOR_B_INDEX] = radio_data->power - roll_correction + pitch_correction;
-  motor_powers[MOTOR_C_INDEX] = radio_data->power + roll_correction - pitch_correction;
-  motor_powers[MOTOR_D_INDEX] = radio_data->power - roll_correction - pitch_correction;
+  motor_powers[MOTOR_A_INDEX] = radio_data->power + roll_correction + pitch_correction + yaw_correction;
+  motor_powers[MOTOR_B_INDEX] = radio_data->power - roll_correction + pitch_correction - yaw_correction;
+  motor_powers[MOTOR_C_INDEX] = radio_data->power + roll_correction - pitch_correction - yaw_correction;
+  motor_powers[MOTOR_D_INDEX] = radio_data->power - roll_correction - pitch_correction + yaw_correction;
 
   for(uint8_t i = 0; i < 4; i++) {
     if(motor_powers[i] > 2000)

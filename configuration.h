@@ -10,7 +10,6 @@
   #define ENABLE_PRINTING
 #endif
 
-
 /*IMU*/
 
 #define GYRO_INVERT_X
@@ -55,7 +54,9 @@
 
 #ifdef ENABLE_AUTOLEVEL
   #define AUTOLEVEL_STRENGTH 5.0f
+  #define LOST_SIGNAL_FAILSAFE_TIMEOUT 20000
 #endif
+
 
 
 /*GLOBAL CONSTANTS, IGNORE*/

@@ -14,9 +14,9 @@ typedef struct {
 
 }Nrf_radio_pkg;
 
-uint8_t rx_address[] = { 1, 2, 3, 4, 0 };
-Radio_pkg radio_data;
-Nrf_radio_pkg rx_data;
+static uint8_t rx_address[] = { 1, 2, 3, 4, 0 };
+static Radio_pkg radio_data;
+static Nrf_radio_pkg rx_data;
 
 uint8_t radio_init(void * params) {
 

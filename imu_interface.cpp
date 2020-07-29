@@ -59,7 +59,7 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
     //Mag
     value = 0;
     value = read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i) << 8 | read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i + 1);
-    imu_data.mag_gauss[i] = (float)value; // tu je se treba normalizirat vrednosti, ko bo cajt
+    imu_data.mag_gauss[i] = (float)value / 230.0f;
 
     //acc
     value = 0;
