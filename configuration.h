@@ -47,9 +47,22 @@
 #define RED_LED_PIN   PB13
 #define MCU_LED_PIN   PC13
 
+/*STABILIZATION*/
+#define MAX_USER_POWER    0.85f
+#define IDLE_POWER        1100
+#define LOST_SIGNAL_POWER 1400
+#define ENABLE_AUTOLEVEL
+
+#ifdef ENABLE_AUTOLEVEL
+  #define AUTOLEVEL_STRENGTH 5.0f
+#endif
+
+
 /*GLOBAL CONSTANTS, IGNORE*/
 #define INIT_OK    1
 #define INIT_ERROR 0
+
+#define ARM_BIT 0
 
 
 #endif
