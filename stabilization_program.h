@@ -21,7 +21,7 @@ typedef struct {
 } Calculated_IMU_Data;
 
 Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time);
-uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * radio_data, PIDProfile * pid_profiles, float delta_time);
+uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * radio_data, PIDProfile ** pid_profiles, float delta_time);
 
 
 #endif
