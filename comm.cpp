@@ -12,8 +12,8 @@ uint8_t print_init(void * params) {
 
 void print(char * str) {
 #ifdef ENABLE_PRINTING
-
-  Serial.print(str);
+  if(str)
+    Serial.print(str);
 
 #endif
 }

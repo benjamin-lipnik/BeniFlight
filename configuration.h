@@ -48,7 +48,7 @@
 
 /*STABILIZATION*/
 #define MAX_USER_POWER    0.85f
-#define IDLE_POWER        1050
+#define IDLE_POWER        1100
 #define LOST_SIGNAL_POWER 1050
 #define ENABLE_AUTOLEVEL
 

@@ -15,10 +15,10 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile pitch_pid_profile = {1.3f, 0.005f, 16.5f, 400.0f};
+PIDProfile roll_pid_profile  = {1.3f, 0.0f, 16.5f, 400.0f};
+PIDProfile pitch_pid_profile = {1.3f, 0.0f, 16.5f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
-PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
+PIDProfile yaw_pid_profile   = {4.0f, 0.0f, 0.0f,  300.0f};
 
 Radio_pkg radio_data;
 
@@ -103,6 +103,11 @@ void loop() {
     #endif
   }
 
+  //if(radio_rx) {
+  //  sprintf(str, "p: %d, y: %d, t: %d, r: %d", radio_data.power, radio_data.yaw, radio_data.pitch, radio_data.roll);
+  //  println(str);
+  //}
+
   /*STABILIZACIJA*/
 
   //ce je vseeee ok pol stabiliziramo dron, in poslusamo dalinc
@@ -118,11 +123,12 @@ void loop() {
 
   //neko funkcijo bi blo fajn met, ki bi vzela imu podatke, vhod daljinca in bi zracunala moci motorjev
   //sprintf(str, "heading: %.3f ", calc_data->world_data->heading_angle);
-  //print(str);
+  //println(str);
 
 
   //sprintf(str, "dt: %lu, p: %.2f, r: %.2f\n\r", delta_micros, calc_data->world_data->pitch_angle, calc_data->world_data->roll_angle);
   //print(str);
+
   PIDProfile * pid_profiles[3]; // TODO tole bi blo fajn nekak popravit da nebo tak cudn
   pid_profiles[ROLL_INDEX]  = &roll_pid_profile;
   pid_profiles[PITCH_INDEX] = &pitch_pid_profile;
@@ -140,8 +146,8 @@ void loop() {
 
 
   /*SERIAL READER*/
-  char * cmd = serial_reader();
-  if(cmd != NULL) {
-    println(cmd);
-  }
+  //char * cmd = serial_reader();
+  //if(cmd != NULL) {
+  //  println(cmd);
+  //}
 }

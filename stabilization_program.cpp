@@ -11,6 +11,7 @@
 static World_data world_data;
 static Calculated_IMU_Data calc_data = {&world_data};
 
+
 Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time) {
 
   //PID INPUT CALC
@@ -29,8 +30,8 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   float angle_pitch_acc = -atan2(imu_data->acc_g[ROLL_INDEX],  imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG; //in deg
   float angle_roll_acc  =  atan2(imu_data->acc_g[PITCH_INDEX], imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG;
 
-  world_data.pitch_angle = (world_data.pitch_angle * 0.995) + (angle_pitch_acc * 0.005);
-  world_data.roll_angle  = (world_data.roll_angle  * 0.995) + (angle_roll_acc  * 0.005);
+  world_data.pitch_angle = (world_data.pitch_angle * 0.9992) + (angle_pitch_acc * 0.0008);
+  world_data.roll_angle  = (world_data.roll_angle  * 0.9992) + (angle_roll_acc  * 0.0008);
 
   //HEADING CALC
 
@@ -64,7 +65,7 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   else if(tmp_heading > 360)
     tmp_heading -= 360;
 
-  //world_data.heading_angle = tmp_heading;
+  world_data.heading_angle = tmp_heading;
 
   return &calc_data;
 }
@@ -88,9 +89,26 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
     return motor_powers;
   }
 
-  float pid_roll_setpoint  = map(radio_data->roll,  1000, 2000, -150,  150);
-  float pid_pitch_setpoint = map(radio_data->pitch, 1000, 2000,  150, -150);
-  float pid_yaw_setpoint   = map(radio_data->yaw,   1000, 2000, -150,  150);
+  float pid_roll_setpoint  = map(radio_data->roll,  1000, 2000, -165,  165);
+  float pid_pitch_setpoint = map(radio_data->pitch, 1000, 2000,  165, -165);
+  float pid_yaw_setpoint   = map(radio_data->yaw,   1000, 2000, -165,  165);
+
+  //<test>
+
+  //roll je x aksa
+  //pitch je y aksa
+
+  /*
+  float x_tmp = pid_roll_setpoint;
+  float y_tmp = pid_pitch_setpoint;
+
+  float fi = imu_data->world_data->heading_angle * DEG_TO_RAD;
+
+  pid_roll_setpoint  = x_tmp * cos(fi) - y_tmp * sin(fi);
+  pid_pitch_setpoint = x_tmp * sin(fi) + y_tmp * cos(fi);
+  */
+
+  //</test>
 
   //testni heading_lock da vijio ce dejla
   //treba je naredit tak, da poisce v kero smer se je blizje obrnat (v CW ali CCW)
@@ -109,7 +127,8 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
     yaw_fix = -heading_angle; //minus da obrne smer
   }
 
-  pid_yaw_setpoint -= yaw_fix * 5; // 0.1 da neabo premocno
+  //AUTO YAW
+  pid_yaw_setpoint -= yaw_fix * 1.4f; // 0.1 da neabo premocno
 
 #ifdef ENABLE_AUTOLEVEL
   pid_roll_setpoint  -= imu_data->world_data->roll_angle  * AUTOLEVEL_STRENGTH;
