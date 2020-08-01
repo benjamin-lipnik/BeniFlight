@@ -35,7 +35,7 @@ char * serial_reader() {
 
 #ifndef ENABLE_PRINTING
   return NULL;
-#endif
+#else
 
   while(Serial.available()) {
     char rx_data = Serial.read();
@@ -49,4 +49,5 @@ char * serial_reader() {
     serial_buffer[buffer_index++] = rx_data;
   }
   return NULL;
+#endif
 }

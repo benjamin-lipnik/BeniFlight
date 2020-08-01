@@ -3,7 +3,7 @@
 
 /*COMMUNICATION, RADIO*/
 
-//#define USE_IBUS
+#define USE_IBUS
   //if ibus is enabled, serial printing will be unavailable
 
 #ifndef USE_IBUS
@@ -12,17 +12,17 @@
 
 /*IMU*/
 
-#define GYRO_INVERT_X
+//#define GYRO_INVERT_X
 #define GYRO_INVERT_Y
 #define GYRO_INVERT_Z
 
-//#define ACC_INVERT_X
+#define ACC_INVERT_X
 //#define ACC_INVERT_Y
 //#define ACC_INVERT_Z
 
-#define X_INDEX 2
+#define X_INDEX 0
 #define Y_INDEX 1
-#define Z_INDEX 0
+#define Z_INDEX 2
 
 #define ROLL_INDEX  X_INDEX
 #define PITCH_INDEX Y_INDEX
@@ -49,12 +49,24 @@
 /*STABILIZATION*/
 #define MAX_USER_POWER    0.85f
 #define IDLE_POWER        1100
-#define LOST_SIGNAL_POWER 1050
+#define LOST_SIGNAL_POWER 1400
 #define ENABLE_AUTOLEVEL
+//#define ENABLE_HEADLOCK
+//#define ENABLE_HEADLESS
 
 #ifdef ENABLE_AUTOLEVEL
   #define AUTOLEVEL_STRENGTH 5.0f
   #define LOST_SIGNAL_FAILSAFE_TIMEOUT 20000
+  //#define ENABLE_FAILSAFE
+#endif
+
+#ifdef ENABLE_HEADLOCK
+  #undef ENABLE_HEADLESS
+  #define HEADLOCK_STRENGTH 1.4f
+#endif
+
+#ifdef ENABLE_HEADLESS
+  #undef ENABLE_HEADLOCK
 #endif
 
 

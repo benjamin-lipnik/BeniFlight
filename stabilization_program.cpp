@@ -11,7 +11,6 @@
 static World_data world_data;
 static Calculated_IMU_Data calc_data = {&world_data};
 
-
 Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time) {
 
   //PID INPUT CALC
@@ -60,6 +59,7 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   //tole je fajn za ugotavlat kire so akse magnetometra
   //float tmp_heading = atan2(imu_data->mag_gauss[MAG_Y], imu_data->mag_gauss[MAG_X]) * RAD_TO_DEG;
 
+  //Transformacija iz ()-180 do 180) v (0 do 360)
   if(tmp_heading < 0)
     tmp_heading+= 360;
   else if(tmp_heading > 360)
@@ -93,22 +93,24 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
   float pid_pitch_setpoint = map(radio_data->pitch, 1000, 2000,  165, -165);
   float pid_yaw_setpoint   = map(radio_data->yaw,   1000, 2000, -165,  165);
 
-  //<test>
 
+#ifdef ENABLE_HEADLESS
   //roll je x aksa
   //pitch je y aksa
 
-  /*
   float x_tmp = pid_roll_setpoint;
   float y_tmp = pid_pitch_setpoint;
 
   float fi = imu_data->world_data->heading_angle * DEG_TO_RAD;
 
-  pid_roll_setpoint  = x_tmp * cos(fi) - y_tmp * sin(fi);
-  pid_pitch_setpoint = x_tmp * sin(fi) + y_tmp * cos(fi);
-  */
+  float sin_fi = sin(fi);
+  float cos_fi = cos(fi);
 
-  //</test>
+  //TRANSFORMACIJA
+  pid_roll_setpoint  = (x_tmp * cos_fi) - (y_tmp * sin_fi);
+  pid_pitch_setpoint = (x_tmp * sin_fi) + (y_tmp * cos_fi);
+
+#endif
 
   //testni heading_lock da vijio ce dejla
   //treba je naredit tak, da poisce v kero smer se je blizje obrnat (v CW ali CCW)
@@ -116,19 +118,22 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
   //je nezvezno -> to pomeni, da je kot 0 stopinj isto kot kot 360 stopinj in se za isti v drugo smer obraca
   //pa take pa to
 
-  float heading_angle = imu_data->world_data->heading_angle;
+#ifdef ENABLE_HEADLOCK
+
   float yaw_fix = 0;
-  if(heading_angle > 180) {
+  if(imu_data->world_data->heading_angle > 180) {
     //obracaj v eno smer
-    yaw_fix = (360 - heading_angle);
+    yaw_fix = (360 - imu_data->world_data->heading_angle);
   }
   else {
     //obracaj v drugo smer
-    yaw_fix = -heading_angle; //minus da obrne smer
+    yaw_fix = -imu_data->world_data->heading_angle; //minus da obrne smer
   }
 
   //AUTO YAW
-  pid_yaw_setpoint -= yaw_fix * 1.4f; // 0.1 da neabo premocno
+  pid_yaw_setpoint -= yaw_fix * HEADLOCK_STRENGTH;
+
+#endif
 
 #ifdef ENABLE_AUTOLEVEL
   pid_roll_setpoint  -= imu_data->world_data->roll_angle  * AUTOLEVEL_STRENGTH;
@@ -146,10 +151,10 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
 
   radio_data->power *= MAX_USER_POWER;
 
-  motor_powers[MOTOR_A_INDEX] = radio_data->power + roll_correction + pitch_correction - yaw_correction;
-  motor_powers[MOTOR_B_INDEX] = radio_data->power - roll_correction + pitch_correction + yaw_correction;
-  motor_powers[MOTOR_C_INDEX] = radio_data->power + roll_correction - pitch_correction + yaw_correction;
-  motor_powers[MOTOR_D_INDEX] = radio_data->power - roll_correction - pitch_correction - yaw_correction;
+  motor_powers[MOTOR_A_INDEX] = radio_data->power + roll_correction + pitch_correction + yaw_correction;
+  motor_powers[MOTOR_B_INDEX] = radio_data->power - roll_correction + pitch_correction - yaw_correction;
+  motor_powers[MOTOR_C_INDEX] = radio_data->power + roll_correction - pitch_correction - yaw_correction;
+  motor_powers[MOTOR_D_INDEX] = radio_data->power - roll_correction - pitch_correction + yaw_correction;
 
   for(uint8_t i = 0; i < 4; i++) {
     if(motor_powers[i] > 2000)
