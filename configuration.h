@@ -47,17 +47,18 @@
 #define MCU_LED_PIN   PC13
 
 /*STABILIZATION*/
-#define MAX_USER_POWER    0.85f
-#define IDLE_POWER        1100
-#define LOST_SIGNAL_POWER 1400
+//#define PROPS_OUT
+#define MAX_USER_POWER    0.90f
+#define IDLE_POWER        1050
+#define LOST_SIGNAL_POWER 1500
 #define ENABLE_AUTOLEVEL
 //#define ENABLE_HEADLOCK
 //#define ENABLE_HEADLESS
 
 #ifdef ENABLE_AUTOLEVEL
   #define AUTOLEVEL_STRENGTH 5.0f
+  #define ENABLE_FAILSAFE
   #define LOST_SIGNAL_FAILSAFE_TIMEOUT 20000
-  //#define ENABLE_FAILSAFE
 #endif
 
 #ifdef ENABLE_HEADLOCK
@@ -76,6 +77,9 @@
 #define INIT_ERROR 0
 
 #define ARM_BIT 0
+#define FEATURE_1_BIT 1
+#define FEATURE_2_BIT 2
+#define FEATURE_3_BIT 3
 
 
 #endif

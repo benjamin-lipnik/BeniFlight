@@ -15,8 +15,8 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.2f, 0.0f, 16.5f, 400.0f};
-PIDProfile pitch_pid_profile = {1.2f, 0.0f, 16.5f, 400.0f};
+PIDProfile roll_pid_profile  = {1.2f, 0.0f, 10.0f, 400.0f};
+PIDProfile pitch_pid_profile = {1.2f, 0.0f, 10.0f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
 PIDProfile yaw_pid_profile   = {4.0f, 0.002f, 0.0f,  300.0f};
 
@@ -105,13 +105,12 @@ void loop() {
     #endif
   }
 
-  if(radio_rx) {
-    sprintf(str, "p: %d, y: %d, t: %d, r: %d", radio_data.power, radio_data.yaw, radio_data.pitch, radio_data.roll);
+  //if(radio_rx) {
+    //sprintf(str, "p: %d, y: %d, t: %d, r: %d", radio_data.power, radio_data.yaw, radio_data.pitch, radio_data.roll);
     //println(str);
-    Serial.println(str);
-  }
+  //}
   //test
-  radio_data.buttons = 0; // disarmamo z vsak slucaj
+  //radio_data.buttons = 0; // disarmamo z vsak slucaj
 
   /*STABILIZACIJA*/
 

@@ -69,7 +69,7 @@ uint8_t radio_init(void * params) {
 }
 
 Radio_pkg * radio_read() {
-  
+
   uint16_t * ibus_rx = ibus_read();
   if(!ibus_rx)
     return NULL;
@@ -80,11 +80,18 @@ Radio_pkg * radio_read() {
       return NULL;
   }
 
-  radio_data.power   = ibus_rx[4];
-  radio_data.yaw     = ibus_rx[6];
-  radio_data.pitch   = ibus_rx[2];
   radio_data.roll    = ibus_rx[0];
-  radio_data.buttons = (ibus_rx[8] > 1200) << ARM_BIT;
+  radio_data.pitch   = ibus_rx[1];
+  radio_data.power   = ibus_rx[2];
+  radio_data.yaw     = ibus_rx[3];
+
+  radio_data.buttons = 0;
+  radio_data.buttons |= (ibus_rx[4] > 1100) << ARM_BIT;
+
+  if(ibus_rx[5] > 1100)
+    radio_data.buttons |= (1 << FEATURE_1_BIT); //FEATURE
+  else if(ibus_rx[5] > 1600)
+    radio_data.buttons |= (1 << FEATURE_2_BIT);
 
   return &radio_data;
 }
