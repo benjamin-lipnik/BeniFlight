@@ -26,44 +26,36 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   world_data.pitch_angle -= world_data.roll_angle  * koeficient;
   world_data.roll_angle  += world_data.pitch_angle * koeficient;
 
-  float angle_pitch_acc = -atan2(imu_data->acc_g[ROLL_INDEX],  imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG; //in deg
-  float angle_roll_acc  =  atan2(imu_data->acc_g[PITCH_INDEX], imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG;
+  float angle_pitch_acc = -atan2f(imu_data->acc_g[ROLL_INDEX],  imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG; //in deg
+  float angle_roll_acc  =  atan2f(imu_data->acc_g[PITCH_INDEX], imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG;
+
 
   world_data.pitch_angle = (world_data.pitch_angle * 0.9992) + (angle_pitch_acc * 0.0008);
   world_data.roll_angle  = (world_data.roll_angle  * 0.9992) + (angle_roll_acc  * 0.0008);
 
-  //HEADING CALC
 
-  //YEP NEKAK GLOBALNO ZA AKSE BI BLO TREBA ZRIHTAT
-  //VLEK TODO
-  #define MAG_X 1
-  #define MAG_Y 0
-  #define MAG_Z 2
+  //HEADING CALC / MAGNETOMETER CALC
 
-  //TOLE KONCN DELA!!! :) :D
-  imu_data->mag_gauss[MAG_X] *= -1;
-  //imu_data->mag_gauss[MAG_Y] *= -1;
-  imu_data->mag_gauss[MAG_Z] *= -1;
+  //float mag_pitch = -world_data.roll_angle  * DEG_TO_RAD;
+  //float mag_roll  =  world_data.pitch_angle * DEG_TO_RAD;
 
-  float compass_x = imu_data->mag_gauss[MAG_X] * cos(-world_data.pitch_angle * DEG_TO_RAD)
-                  + imu_data->mag_gauss[MAG_Y] * sin(world_data.roll_angle   * DEG_TO_RAD) * sin(-world_data.pitch_angle * DEG_TO_RAD)
-                  - imu_data->mag_gauss[MAG_Z] * cos(world_data.roll_angle   * DEG_TO_RAD) * sin(-world_data.pitch_angle * DEG_TO_RAD);
+  float mag_pitch =  world_data.pitch_angle * DEG_TO_RAD;
+  float mag_roll  =  world_data.roll_angle  * DEG_TO_RAD;
 
-  float compass_y = imu_data->mag_gauss[MAG_Y] * cos(world_data.roll_angle   * DEG_TO_RAD)
-                  + imu_data->mag_gauss[MAG_Z] * sin(world_data.roll_angle   * DEG_TO_RAD);
+  #define mag_x (imu_data->mag_gauss[X_INDEX])
+  #define mag_y (imu_data->mag_gauss[Y_INDEX])
+  #define mag_z (imu_data->mag_gauss[Z_INDEX])
+
+  float mag_x_hor = mag_x * cos(mag_pitch) + mag_y * sin(mag_roll) * sin(mag_pitch) - mag_z * cos(mag_roll) * sin(mag_pitch);
+  float mag_y_hor = mag_y * cos(mag_roll) + mag_z * sin(mag_roll);
 
 
-  //tu bi se blo treba dodat magnetno deklinacijo  v ljubljani mislim da je okol 4 stopinje,
-  float tmp_heading = atan2(compass_y, compass_x) * RAD_TO_DEG;
+  float tmp_heading = atan2f(mag_y_hor, mag_x_hor) * RAD_TO_DEG;
+  //float tmp_heading = atan2f(mag_y, mag_x) * RAD_TO_DEG;
 
-  //tole je fajn za ugotavlat kire so akse magnetometra
-  //float tmp_heading = atan2(imu_data->mag_gauss[MAG_Y], imu_data->mag_gauss[MAG_X]) * RAD_TO_DEG;
-
-  //Transformacija iz ()-180 do 180) v (0 do 360)
-  if(tmp_heading < 0)
-    tmp_heading+= 360;
-  else if(tmp_heading > 360)
-    tmp_heading -= 360;
+  #undef mag_x
+  #undef mag_y
+  #undef mag_z
 
   world_data.heading_angle = tmp_heading;
 

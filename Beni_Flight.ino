@@ -8,7 +8,7 @@
 #include "failsafe.h"
 #include "stabilization_program.h"
 
-char str[100]; //buffer za izpisovanje
+char str[150]; //buffer za izpisovanje
 unsigned long loop_micros = 0;
 unsigned long loop_millis = 0;
 unsigned long delta_micros = 0;
@@ -62,17 +62,18 @@ void loop() {
   loop_millis  = loop_micros * 0.001;
 
   if(delta_micros > 4000) { //too long
-    error_handler_id(2);
+    //error_handler_id(2);
     //error
   }
   /*IMU*/
 
   //Preberemo podatke z IMU in jih preracunamo v uporabne vrednosti
   IMU_TypeDef * imu_data = imu_read();
-  //sprintf(str, "dt: %lu, MAG X: %.2f, Y: %.2f, Z:%.2f\n\r", delta_micros, imu_data->mag_gauss[X_INDEX], imu_data->mag_gauss[Y_INDEX], imu_data->mag_gauss[Z_INDEX]);
-  //sprintf(str, "dt: %lu, GYRO X: %.2f, Y: %.2f, Z:%.2f\n\r", delta_micros, imu_data->omega_dps[X_INDEX], imu_data->omega_dps[Y_INDEX], imu_data->omega_dps[Z_INDEX]);
-  //sprintf(str, "dt: %lu, ACC X: %.2f, Y: %.2f, Z:%.2f\n\r", delta_micros, imu_data->acc_g[X_INDEX], imu_data->acc_g[Y_INDEX], imu_data->acc_g[Z_INDEX]);
+  //sprintf(str, "dt: %lu, MAG X: %.2f, Y: %.2f, Z:%.2f ", delta_micros, imu_data->mag_gauss[X_INDEX], imu_data->mag_gauss[Y_INDEX], imu_data->mag_gauss[Z_INDEX]);
+  //sprintf(str, "dt: %lu, GYRO X: %.2f, Y: %.2f, Z:%.2f ", delta_micros, imu_data->omega_dps[X_INDEX], imu_data->omega_dps[Y_INDEX], imu_data->omega_dps[Z_INDEX]);
   //print(str);
+  //sprintf(str, "dt: %lu, ACC X: %.2f, Y: %.2f, Z:%.2f ", delta_micros, imu_data->acc_g[X_INDEX], imu_data->acc_g[Y_INDEX], imu_data->acc_g[Z_INDEX]);
+  //println(str);
 
   /*RADIO*/
 
@@ -122,7 +123,7 @@ void loop() {
 
   //FAILSAFE
   if(abs(calc_data->world_data->roll_angle) > 70 || abs(calc_data->world_data->pitch_angle) > 70) {
-    error_handler_id(4);
+    //error_handler_id(4);
   }
 
   //neko funkcijo bi blo fajn met, ki bi vzela imu podatke, vhod daljinca in bi zracunala moci motorjev

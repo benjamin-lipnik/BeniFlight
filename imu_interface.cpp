@@ -14,8 +14,11 @@
 TwoWire I2C(2, I2C_FAST_MODE); // I2C2
 static IMU_TypeDef imu_data;
 
-static int16_t gyro_callib[3] = {259, 31,  19};
-static int16_t acc_callib [3] = {1,   57, -94};
+
+
+//callibration
+static const int16_t gyro_callib[3] = {247, 23, 18};
+static const int16_t acc_callib [3] = {-203, 30, -113};
 
 static void write_reg(uint8_t address, uint8_t reg, uint8_t data) {
   I2C.beginTransmission(address);
@@ -23,6 +26,7 @@ static void write_reg(uint8_t address, uint8_t reg, uint8_t data) {
   I2C.write(data);
   I2C.endTransmission();
 }
+
 static uint8_t read_reg(uint8_t address, uint8_t reg) {
   I2C.beginTransmission(address);
   I2C.write(reg);
@@ -63,28 +67,29 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
     //Mag
     value = 0;
     value = read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i) << 8 | read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i + 1);
-    //imu_data.mag_gauss[i] = (float)value / 230.0f;
+    imu_data.mag_gauss[mag_axes[i]] = (float)value / 230.0f;
 
     //FILTRIRANJE
-    static int16_t gauss_filter[3];
-    gauss_filter[i] = gauss_filter[i] * 0.8f + value * 0.2f;
-    imu_data.mag_gauss[i] = (float)gauss_filter[i] / 230.0f;
+    //static int16_t gauss_filter[3];
+    //gauss_filter[i] = gauss_filter[i] * 0.8f + value * 0.2f;
+    //imu_data.mag_gauss[mag_axes[i]] = (float)gauss_filter[i] / 230.0f;
 
     //acc
     value = 0;
     value = read_reg(MPU6050_ADDRESS, 0x3B + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x3B + 2*i + 1);
     value += acc_callib[i];
-    imu_data.acc_g[i] = (float)value / 4096.0f;
+    imu_data.acc_g[acc_axes[i]] = (float)value / 4096.0f;
+
+    //////CALLIBRATION
+    //static char str[100];
+    //sprintf(str, "%d,", value);
+    //print(str);
 
     //gyro
     value = 0;
     value = read_reg(MPU6050_ADDRESS, 0x43 + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x43 + 2*i + 1);
     value += gyro_callib[i];
-    imu_data.omega_dps[i] = (float)value / 65.5f;
-
-    //static char str[100];
-    //sprintf(str, "%d,", value);
-    //print(str);
+    imu_data.omega_dps[gyro_axes[i]] = (float)value / 65.5f;
   }
   //print((char *)"\n");
   //println(NULL);
@@ -115,6 +120,20 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
 
 #ifdef ACC_INVERT_Z
   imu_data.acc_g[Z_INDEX] *= -1;
+#endif
+
+/*MAG INVERTERS*/
+
+#ifdef MAG_INVERT_X
+  imu_data.mag_gauss[X_INDEX] *= -1;
+#endif
+
+#ifdef MAG_INVERT_Y
+  imu_data.mag_gauss[Y_INDEX] *= -1;
+#endif
+
+#ifdef MAG_INVERT_Z
+  imu_data.mag_gauss[Z_INDEX] *= -1;
 #endif
 
   return &imu_data;

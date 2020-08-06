@@ -3,7 +3,7 @@
 
 /*COMMUNICATION, RADIO*/
 
-#define USE_IBUS
+//#define USE_IBUS
   //if ibus is enabled, serial printing will be unavailable
 
 #ifndef USE_IBUS
@@ -20,13 +20,10 @@
 //#define ACC_INVERT_Y
 //#define ACC_INVERT_Z
 
-#define X_INDEX 0
-#define Y_INDEX 1
-#define Z_INDEX 2
+//#define MAG_INVERT_X
+//#define MAG_INVERT_Y
+//#define MAG_INVERT_Z
 
-#define ROLL_INDEX  X_INDEX
-#define PITCH_INDEX Y_INDEX
-#define YAW_INDEX   Z_INDEX
 
 /*MOTORS*/
 
@@ -72,7 +69,7 @@
 
 
 
-/*GLOBAL CONSTANTS, IGNORE*/
+/*GLOBAL CONSTANTS, IGNORE & DO NOT CHANGE!*/
 #define INIT_OK    1
 #define INIT_ERROR 0
 
@@ -80,6 +77,14 @@
 #define FEATURE_1_BIT 1
 #define FEATURE_2_BIT 2
 #define FEATURE_3_BIT 3
+
+#define X_INDEX 0
+#define Y_INDEX 1
+#define Z_INDEX 2
+
+#define ROLL_INDEX  X_INDEX
+#define PITCH_INDEX Y_INDEX
+#define YAW_INDEX   Z_INDEX
 
 
 #endif
