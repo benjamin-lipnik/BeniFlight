@@ -57,6 +57,9 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   #undef mag_y
   #undef mag_z
 
+  if(tmp_heading < 0) tmp_heading += 360;
+  if(tmp_heading > 360) tmp_heading -= 360;
+
   world_data.heading_angle = tmp_heading;
 
   return &calc_data;

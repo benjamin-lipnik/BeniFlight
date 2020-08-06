@@ -67,12 +67,12 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
     //Mag
     value = 0;
     value = read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i) << 8 | read_reg(LSM303_MAG_ADDRESS, 0x03 + 2*i + 1);
-    imu_data.mag_gauss[mag_axes[i]] = (float)value / 230.0f;
+    //imu_data.mag_gauss[mag_axes[i]] = (float)value / 230.0f;
 
     //FILTRIRANJE
-    //static int16_t gauss_filter[3];
-    //gauss_filter[i] = gauss_filter[i] * 0.8f + value * 0.2f;
-    //imu_data.mag_gauss[mag_axes[i]] = (float)gauss_filter[i] / 230.0f;
+    static int16_t gauss_filter[3];
+    gauss_filter[i] = gauss_filter[i] * 0.7f + value * 0.3f;
+    imu_data.mag_gauss[mag_axes[i]] = (float)gauss_filter[i] / 230.0f;
 
     //acc
     value = 0;
