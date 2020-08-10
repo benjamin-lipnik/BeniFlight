@@ -15,10 +15,10 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.2f, 0.002f, 10.0f, 400.0f};
-PIDProfile pitch_pid_profile = {1.2f, 0.002f, 10.0f, 400.0f};
+PIDProfile roll_pid_profile  = {0.0f, 0.0f, 0.0f, 400.0f};
+PIDProfile pitch_pid_profile = {0.0f, 0.0f, 0.0f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
-PIDProfile yaw_pid_profile   = {4.0f, 0.002f, 0.0f,  300.0f};
+PIDProfile yaw_pid_profile   = {0.0f, 0.0f, 0.0f,  300.0f};
 
 PIDProfile * pid_profiles[3] = {[ROLL_INDEX] = &roll_pid_profile, [PITCH_INDEX] = &pitch_pid_profile, [YAW_INDEX] = &yaw_pid_profile};
 

@@ -68,8 +68,8 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
 static uint16_t motor_powers[4];
 uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * radio_data, PIDProfile ** pid_profiles, float delta_time) {
 
-  if(!radio_data)
-    radio_data = (Radio_pkg *)&flushed_pkg;
+  //if(!radio_data)
+  //  radio_data = (Radio_pkg *)&flushed_pkg;
 
   if(!(radio_data->buttons & (1<<ARM_BIT))) {
     //UNARMED
@@ -92,18 +92,21 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
 #ifdef ENABLE_HEADLESS
   //roll je x aksa
   //pitch je y aksa
+  if(radio_data->buttons & (1<<FEATURE_1_BIT)) {
 
-  float x_tmp = pid_roll_setpoint;
-  float y_tmp = pid_pitch_setpoint;
+    float x_tmp = pid_roll_setpoint;
+    float y_tmp = pid_pitch_setpoint;
 
-  float fi = imu_data->world_data->heading_angle * DEG_TO_RAD;
+    float fi = imu_data->world_data->heading_angle * DEG_TO_RAD;
 
-  float sin_fi = sin(fi);
-  float cos_fi = cos(fi);
+    float sin_fi = sin(fi);
+    float cos_fi = cos(fi);
 
-  //TRANSFORMACIJA
-  pid_roll_setpoint  = (x_tmp * cos_fi) - (y_tmp * sin_fi);
-  pid_pitch_setpoint = (x_tmp * sin_fi) + (y_tmp * cos_fi);
+    //TRANSFORMACIJA
+    pid_roll_setpoint  = (x_tmp * cos_fi) - (y_tmp * sin_fi);
+    pid_pitch_setpoint = (x_tmp * sin_fi) + (y_tmp * cos_fi);
+
+  }
 
 #endif
 
@@ -115,18 +118,22 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg * ra
 
 #ifdef ENABLE_HEADLOCK
 
-  float yaw_fix = 0;
-  if(imu_data->world_data->heading_angle > 180) {
-    //obracaj v eno smer
-    yaw_fix = (360 - imu_data->world_data->heading_angle);
-  }
-  else {
-    //obracaj v drugo smer
-    yaw_fix = -imu_data->world_data->heading_angle; //minus da obrne smer
-  }
+  if(radio_data->buttons & (1<<FEATURE_2_BIT)) {
 
-  //AUTO YAW
-  pid_yaw_setpoint -= yaw_fix * HEADLOCK_STRENGTH;
+    float yaw_fix = 0;
+    if(imu_data->world_data->heading_angle > 180) {
+      //obracaj v eno smer
+      yaw_fix = (360 - imu_data->world_data->heading_angle);
+    }
+    else {
+      //obracaj v drugo smer
+      yaw_fix = -imu_data->world_data->heading_angle; //minus da obrne smer
+    }
+
+    //AUTO YAW
+    pid_yaw_setpoint -= yaw_fix * HEADLOCK_STRENGTH;
+
+  }
 
 #endif
 

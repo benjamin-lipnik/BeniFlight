@@ -3,7 +3,7 @@
 
 /*COMMUNICATION, RADIO*/
 
-//#define USE_IBUS
+#define USE_IBUS
   //if ibus is enabled, serial printing will be unavailable
 
 #ifndef USE_IBUS
@@ -48,9 +48,9 @@
 #define MAX_USER_POWER    0.90f
 #define IDLE_POWER        1050
 #define LOST_SIGNAL_POWER 1100
-#define ENABLE_AUTOLEVEL
+//#define ENABLE_AUTOLEVEL
 //#define ENABLE_HEADLOCK
-#define ENABLE_HEADLESS
+//#define ENABLE_HEADLESS
 
 #ifdef ENABLE_AUTOLEVEL
   #define AUTOLEVEL_STRENGTH 5.0f
@@ -59,12 +59,12 @@
 #endif
 
 #ifdef ENABLE_HEADLOCK
-  #undef ENABLE_HEADLESS
-  #define HEADLOCK_STRENGTH 1.4f
+  //#undef ENABLE_HEADLESS
+  #define HEADLOCK_STRENGTH 2.4f
 #endif
 
 #ifdef ENABLE_HEADLESS
-  #undef ENABLE_HEADLOCK
+  //#undef ENABLE_HEADLOCK
 #endif
 
 
