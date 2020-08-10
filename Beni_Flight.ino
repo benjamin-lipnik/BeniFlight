@@ -15,10 +15,10 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {0.0f, 0.0f, 0.0f, 400.0f};
-PIDProfile pitch_pid_profile = {0.0f, 0.0f, 0.0f, 400.0f};
+PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.0f, 400.0f};
+PIDProfile pitch_pid_profile = {1.3f, 0.005f, 16.0f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
-PIDProfile yaw_pid_profile   = {0.0f, 0.0f, 0.0f,  300.0f};
+PIDProfile yaw_pid_profile   = {3.0f, 0.0f, 0.0f,  300.0f};
 
 PIDProfile * pid_profiles[3] = {[ROLL_INDEX] = &roll_pid_profile, [PITCH_INDEX] = &pitch_pid_profile, [YAW_INDEX] = &yaw_pid_profile};
 
@@ -115,6 +115,10 @@ void loop() {
   //test
   //radio_data.buttons = 0; // disarmamo z vsak slucaj
 
+  //TEEEST
+  //sprintf(str, "p: %u\n\r", radio_data.power);
+  //Serial.print(str);
+
   /*STABILIZACIJA*/
 
   //ce je vseeee ok pol stabiliziramo dron, in poslusamo dalinc
@@ -136,7 +140,7 @@ void loop() {
   //sprintf(str, "dt: %lu, p: %.2f, r: %.2f", delta_micros, calc_data->world_data->pitch_angle, calc_data->world_data->roll_angle);
   //println(str);
 
-  uint16_t * motor_powers = calculate_motor_powers(calc_data, &radio_data, pid_profiles, delta_micros * 0.001);
+  uint16_t * motor_powers = calculate_motor_powers(calc_data, radio_data, pid_profiles, delta_micros * 0.001);
 
   //sprintf(str, "A: %d, B: %d, C: %d, D: %d", motor_powers[MOTOR_A_INDEX],motor_powers[MOTOR_B_INDEX],motor_powers[MOTOR_C_INDEX],motor_powers[MOTOR_D_INDEX]);
   //println(str);
@@ -146,10 +150,17 @@ void loop() {
   }
   motors_apply();
 
-
   /*SERIAL READER*/
-  //char * cmd = serial_reader();
-  //if(cmd != NULL) {
-  //  println(cmd);
-  //}
+  /*char * cmd = serial_reader();
+  if(cmd != NULL) {
+    uint16_t power = atoi(cmd);
+    motor_assign_power(0, power);
+    motor_assign_power(1, power);
+    motor_assign_power(2, power);
+    motor_assign_power(3, power);
+    motors_apply();
+
+    println(cmd);
+  }
+  */
 }

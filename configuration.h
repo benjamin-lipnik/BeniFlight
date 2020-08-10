@@ -48,7 +48,7 @@
 #define MAX_USER_POWER    0.90f
 #define IDLE_POWER        1050
 #define LOST_SIGNAL_POWER 1100
-//#define ENABLE_AUTOLEVEL
+#define ENABLE_AUTOLEVEL
 //#define ENABLE_HEADLOCK
 //#define ENABLE_HEADLESS
 
