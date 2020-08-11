@@ -1,6 +1,7 @@
 #include "failsafe.h"
 #include "motor_interface.h"
 #include "comm.h"
+#include "radio_interface.h"
 #include <Arduino.h>
 
 static void blink(uint8_t pin)

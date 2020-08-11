@@ -15,10 +15,10 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.0f, 400.0f};
-PIDProfile pitch_pid_profile = {1.3f, 0.005f, 16.0f, 400.0f};
+PIDProfile roll_pid_profile  = {1.1f, 0.002f, 16.0f, 400.0f};
+PIDProfile pitch_pid_profile = {1.1f, 0.002f, 16.0f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
-PIDProfile yaw_pid_profile   = {3.0f, 0.0f, 0.0f,  300.0f};
+PIDProfile yaw_pid_profile   = {4.0f, 0.002f, 0.0f,  300.0f};
 
 PIDProfile * pid_profiles[3] = {[ROLL_INDEX] = &roll_pid_profile, [PITCH_INDEX] = &pitch_pid_profile, [YAW_INDEX] = &yaw_pid_profile};
 
@@ -45,10 +45,22 @@ void setup() {
   digitalWrite(RED_LED_PIN,  HIGH);
   println((char *)"OK!");
 
-  Radio_pkg * radio_rx = radio_read();
-  if(radio_rx && radio_rx->buttons & (1<<ARM_BIT)) {
-    //ARMED ON START
-    error_handler_id(1);
+  Radio_pkg * radio_rx;
+  while(!radio_rx) { //wait for radio connetion
+    radio_rx = radio_read();
+    delay(2);
+  }
+  for(uint8_t i = 0; i < 100; i++) { //get reliable data
+    radio_rx = radio_read();
+    delay(1);
+  }
+
+  while(1) { //wait for unarmed state
+    if(!(radio_rx->buttons & _BV(ARM_BIT))) {
+      break;
+    }
+    radio_rx = radio_read();
+    delay(1);
   }
 
   loop_millis = millis();
@@ -84,6 +96,16 @@ void loop() {
   Radio_pkg * radio_rx = radio_read();
 
   if(radio_rx) {
+    uint8_t armed = (radio_rx->buttons & _BV(ARM_BIT)) > 0;
+    uint8_t prev_armed = (radio_data.buttons & _BV(ARM_BIT)) > 0;
+
+    if(armed && (armed != prev_armed)) {
+      if(radio_rx->power > 1500) { //high power output on arm
+        error_handler_id(10);
+      }
+    }
+
+    digitalWrite(BLUE_LED_PIN, radio_rx->buttons & _BV(ARM_BIT));
     radio_data = *radio_rx;
     last_radio_update = loop_millis;
   }

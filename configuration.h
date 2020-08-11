@@ -6,6 +6,10 @@
 #define USE_IBUS
   //if ibus is enabled, serial printing will be unavailable
 
+#define REMOTE_RESET
+  //TODO (if ever hehe)
+  //ignore errors and restart the program via remote signal (works only with error_handler_id)
+
 #ifndef USE_IBUS
   #define ENABLE_PRINTING
 #endif
@@ -45,9 +49,9 @@
 
 /*STABILIZATION*/
 //#define PROPS_OUT
-#define MAX_USER_POWER    0.90f
-#define IDLE_POWER        1050
-#define LOST_SIGNAL_POWER 1100
+#define MAX_USER_POWER    0.85f
+#define IDLE_POWER        1100
+#define LOST_SIGNAL_POWER 1200
 #define ENABLE_AUTOLEVEL
 //#define ENABLE_HEADLOCK
 //#define ENABLE_HEADLESS
@@ -55,7 +59,7 @@
 #ifdef ENABLE_AUTOLEVEL
   #define AUTOLEVEL_STRENGTH 5.0f
   #define ENABLE_FAILSAFE
-  #define LOST_SIGNAL_FAILSAFE_TIMEOUT 20000
+  #define LOST_SIGNAL_FAILSAFE_TIMEOUT 5000
 #endif
 
 #ifdef ENABLE_HEADLOCK
