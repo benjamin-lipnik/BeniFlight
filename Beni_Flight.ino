@@ -15,10 +15,10 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.1f, 0.002f, 16.0f, 400.0f};
-PIDProfile pitch_pid_profile = {1.1f, 0.002f, 16.0f, 400.0f};
+PIDProfile roll_pid_profile  = {1.05f, 0.0f, 16.5f, 400.0f};
+PIDProfile pitch_pid_profile = {1.05f, 0.0f, 16.5f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
-PIDProfile yaw_pid_profile   = {4.0f, 0.002f, 0.0f,  300.0f};
+PIDProfile yaw_pid_profile   = {4.0f, 0.0f, 0.0f,  300.0f};
 
 PIDProfile * pid_profiles[3] = {[ROLL_INDEX] = &roll_pid_profile, [PITCH_INDEX] = &pitch_pid_profile, [YAW_INDEX] = &yaw_pid_profile};
 
@@ -103,6 +103,13 @@ void loop() {
       if(radio_rx->power > 1500) { //high power output on arm
         error_handler_id(10);
       }
+      //CHECK FOR EMPTY BATTERY
+      float v_bat = (analogRead(BAT_SENSE_PIN) * 3.3f * 11.22f) / 4096.0f;
+      if(v_bat < 14.8f && v_bat > 1.0f) { //if battery is connected and its voltage is bellow 14.8V
+        error_handler_id(11);
+      }
+      ///////
+
     }
 
     digitalWrite(BLUE_LED_PIN, radio_rx->buttons & _BV(ARM_BIT));
@@ -161,6 +168,7 @@ void loop() {
 
   //sprintf(str, "dt: %lu, p: %.2f, r: %.2f", delta_micros, calc_data->world_data->pitch_angle, calc_data->world_data->roll_angle);
   //println(str);
+
 
   uint16_t * motor_powers = calculate_motor_powers(calc_data, radio_data, pid_profiles, delta_micros * 0.001);
 

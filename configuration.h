@@ -41,11 +41,12 @@
 #define MOTOR_C_INDEX 2
 #define MOTOR_D_INDEX 3
 
-/*LEDS*/
+/*LED, BAT PINS*/
 
 #define BLUE_LED_PIN  PB12
 #define RED_LED_PIN   PB13
 #define MCU_LED_PIN   PC13
+#define BAT_SENSE_PIN PA0
 
 /*STABILIZATION*/
 //#define PROPS_OUT
@@ -53,8 +54,8 @@
 #define IDLE_POWER        1100
 #define LOST_SIGNAL_POWER 1200
 #define ENABLE_AUTOLEVEL
-//#define ENABLE_HEADLOCK
-//#define ENABLE_HEADLESS
+#define ENABLE_HEADLOCK
+#define ENABLE_HEADLESS
 
 #ifdef ENABLE_AUTOLEVEL
   #define AUTOLEVEL_STRENGTH 5.0f
@@ -64,7 +65,7 @@
 
 #ifdef ENABLE_HEADLOCK
   //#undef ENABLE_HEADLESS
-  #define HEADLOCK_STRENGTH 2.4f
+  #define HEADLOCK_STRENGTH 1.5f
 #endif
 
 #ifdef ENABLE_HEADLESS

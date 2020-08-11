@@ -86,6 +86,27 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg radi
   float pid_yaw_setpoint   = map(radio_data.yaw,   1000, 2000, -165,  165);
 
 
+  if(radio_data.buttons & (1<<FEATURE_1_BIT)) { //HEADLESS
+    float x_tmp = pid_roll_setpoint;
+    float y_tmp = pid_pitch_setpoint;
+
+    float fi = imu_data->world_data->heading_angle * DEG_TO_RAD;
+    float sin_fi = sin(fi);
+    float cos_fi = cos(fi);
+
+    //TRANSFORMACIJA
+    pid_roll_setpoint  = (x_tmp * cos_fi) - (y_tmp * sin_fi);
+    pid_pitch_setpoint = (x_tmp * sin_fi) + (y_tmp * cos_fi);
+  }
+
+  else if(radio_data.buttons & (1<<FEATURE_2_BIT)) { //HEADLOCK
+    float yaw_fix = 0;
+    yaw_fix = 180 - imu_data->world_data->heading_angle;
+    //AUTO YAW
+    pid_yaw_setpoint -= yaw_fix * HEADLOCK_STRENGTH;
+  }
+
+
 
 #ifdef ENABLE_AUTOLEVEL
   pid_roll_setpoint  -= imu_data->world_data->roll_angle  * AUTOLEVEL_STRENGTH;
@@ -95,6 +116,7 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg radi
   float roll_correction  = pid_calculate(pid_profiles[ROLL_INDEX],  imu_data->omega_pid_input[ROLL_INDEX],  pid_roll_setpoint,  delta_time);
   float pitch_correction = pid_calculate(pid_profiles[PITCH_INDEX], imu_data->omega_pid_input[PITCH_INDEX], pid_pitch_setpoint, delta_time);
   float yaw_correction   = pid_calculate(pid_profiles[YAW_INDEX],   imu_data->omega_pid_input[YAW_INDEX],   pid_yaw_setpoint,   delta_time);
+
 
   if(radio_data.power > 2000)
     radio_data.power = 2000;
