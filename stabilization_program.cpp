@@ -19,19 +19,25 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   }
 
   //ANGLE CALC
+  //GYRO_ANGLE
   world_data.pitch_angle += imu_data->omega_dps[PITCH_INDEX] * delta_time;
   world_data.roll_angle  += imu_data->omega_dps[ROLL_INDEX]  * delta_time;
+  //test
+  world_data.yaw_angle += imu_data->omega_dps[YAW_INDEX] * delta_time;
 
   float koeficient = sin(imu_data->omega_dps[YAW_INDEX] * delta_time * DEG_TO_RAD);
   world_data.pitch_angle -= world_data.roll_angle  * koeficient;
   world_data.roll_angle  += world_data.pitch_angle * koeficient;
 
+  //ACC_ANGLE
   float angle_pitch_acc = -atan2f(imu_data->acc_g[ROLL_INDEX],  imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG; //in deg
   float angle_roll_acc  =  atan2f(imu_data->acc_g[PITCH_INDEX], imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG;
 
+  //GYRO_ACC_FUSION
+  //good values: 0.9997 & 0.0003
+  world_data.pitch_angle = (world_data.pitch_angle * 0.9997) + (angle_pitch_acc * 0.0003);
+  world_data.roll_angle  = (world_data.roll_angle  * 0.9997) + (angle_roll_acc  * 0.0003);
 
-  world_data.pitch_angle = (world_data.pitch_angle * 0.9992) + (angle_pitch_acc * 0.0008);
-  world_data.roll_angle  = (world_data.roll_angle  * 0.9992) + (angle_roll_acc  * 0.0008);
 
 
   //HEADING CALC / MAGNETOMETER CALC
@@ -61,6 +67,8 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   if(tmp_heading > 360) tmp_heading -= 360;
 
   world_data.heading_angle = tmp_heading;
+
+
 
   return &calc_data;
 }

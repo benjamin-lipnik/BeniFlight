@@ -6,12 +6,11 @@
 #define USE_IBUS
   //if ibus is enabled, serial printing will be unavailable
 
-#define REMOTE_RESET
-  //TODO (if ever hehe)
-  //ignore errors and restart the program via remote signal (works only with error_handler_id)
+#define ENABLE_PRINTING
+#define ENABLE_PRINTING_AND_IBUS
 
-#ifndef USE_IBUS
-  #define ENABLE_PRINTING
+#if (defined USE_IBUS) && (!defined ENABLE_PRINTING_AND_IBUS)
+  #undef ENABLE_PRINTING
 #endif
 
 /*IMU*/
@@ -36,17 +35,18 @@
 #define MOTOR_PIN_C   PB8
 #define MOTOR_PIN_D   PB9
 
-#define MOTOR_A_INDEX 0
-#define MOTOR_B_INDEX 1
-#define MOTOR_C_INDEX 2
-#define MOTOR_D_INDEX 3
-
 /*LED, BAT PINS*/
 
 #define BLUE_LED_PIN  PB12
 #define RED_LED_PIN   PB13
 #define MCU_LED_PIN   PC13
 #define BAT_SENSE_PIN PA0
+
+/*BATTERY*/
+//#define BAT_CELL_COUNT        3
+#define CELL_VOLTAGE_LOW       (3.7f)
+#define CELL_VOLTAGE_FULL      (4.2f)
+#define CELL_VOLTAGE_CRITICAL  (3.4f)
 
 /*STABILIZATION*/
 //#define PROPS_OUT
@@ -90,6 +90,11 @@
 #define ROLL_INDEX  X_INDEX
 #define PITCH_INDEX Y_INDEX
 #define YAW_INDEX   Z_INDEX
+
+#define MOTOR_A_INDEX 0
+#define MOTOR_B_INDEX 1
+#define MOTOR_C_INDEX 2
+#define MOTOR_D_INDEX 3
 
 
 #endif

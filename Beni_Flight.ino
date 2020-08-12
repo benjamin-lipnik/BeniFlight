@@ -24,6 +24,14 @@ PIDProfile * pid_profiles[3] = {[ROLL_INDEX] = &roll_pid_profile, [PITCH_INDEX] 
 
 Radio_pkg radio_data;
 
+#ifndef BAT_CELL_COUNT
+uint8_t bat_cells = 0;
+#endif
+
+float get_bat_voltage () {
+  return (analogRead(BAT_SENSE_PIN) * 3.3f * 11.22f) / 4096.0f;
+}
+
 void setup() {
   pinMode(MCU_LED_PIN,  OUTPUT);
   pinMode(RED_LED_PIN,  OUTPUT);
@@ -40,6 +48,22 @@ void setup() {
   if(init_info != INIT_OK) {
     error_handler_id(0);
   }
+
+#if !defined BAT_CELL_COUNT
+#define BAT_CELL_COUNT bat_cells
+  float v_bat = get_bat_voltage();
+  if(v_bat > 1) {
+    for(uint8_t i = 1; i < 6; i++) {
+      if(v_bat > (i * (CELL_VOLTAGE_FULL + 0.2)))
+        continue;
+      bat_cells = i;
+      break;
+    }
+  }
+#endif
+
+sprintf(str, "BAT CELL CNT: %d ", BAT_CELL_COUNT);
+println(str);
 
   digitalWrite(BLUE_LED_PIN, LOW);
   digitalWrite(RED_LED_PIN,  HIGH);
@@ -79,6 +103,11 @@ void loop() {
     error_handler_id(2);
     //error
   }
+
+  //sprintf(str, "dt: %lu ", delta_micros);
+  //print(str);
+
+
   /*IMU*/
 
   //Preberemo podatke z IMU in jih preracunamo v uporabne vrednosti
@@ -104,8 +133,8 @@ void loop() {
         error_handler_id(10);
       }
       //CHECK FOR EMPTY BATTERY
-      float v_bat = (analogRead(BAT_SENSE_PIN) * 3.3f * 11.22f) / 4096.0f;
-      if(v_bat < 14.8f && v_bat > 1.0f) { //if battery is connected and its voltage is bellow 14.8V
+      float v_bat = get_bat_voltage();
+      if(v_bat < (BAT_CELL_COUNT * (float)CELL_VOLTAGE_LOW) && v_bat > 1.0f && BAT_CELL_COUNT) { //if battery is connected and its voltage is bellow 14.8V
         error_handler_id(11);
       }
       ///////
@@ -167,6 +196,9 @@ void loop() {
 
 
   //sprintf(str, "dt: %lu, p: %.2f, r: %.2f", delta_micros, calc_data->world_data->pitch_angle, calc_data->world_data->roll_angle);
+  //println(str);
+
+  //sprintf(str, "%.3f ", calc_data->world_data->yaw_angle);
   //println(str);
 
 
