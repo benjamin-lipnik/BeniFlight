@@ -15,8 +15,8 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.05f, 0.0f, 16.5f, 400.0f};
-PIDProfile pitch_pid_profile = {1.05f, 0.0f, 16.5f, 400.0f};
+PIDProfile roll_pid_profile  = {1.02f, 0.0f, 16.5f, 400.0f};
+PIDProfile pitch_pid_profile = {1.02f, 0.0f, 16.5f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
 PIDProfile yaw_pid_profile   = {4.0f, 0.0f, 0.0f,  300.0f};
 
@@ -206,6 +206,8 @@ void loop() {
 
   //sprintf(str, "A: %d, B: %d, C: %d, D: %d", motor_powers[MOTOR_A_INDEX],motor_powers[MOTOR_B_INDEX],motor_powers[MOTOR_C_INDEX],motor_powers[MOTOR_D_INDEX]);
   //println(str);
+
+  //float bat_multip = 3.0f / ((float)BAT_CELL_COUNT);
 
   for(uint8_t i = 0; i < 4; i++) {
     motor_assign_power(i, motor_powers[i]);
