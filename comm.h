@@ -5,9 +5,11 @@
 #include "configuration.h"
 
 uint8_t print_init(void * params);
-void print (char * str);
-void println(char * str);
+void print (char * string);
+void println(char * string);
 
 char * serial_reader();
+
+extern char str[150]; //buffer za izpisovanje
 
 #endif

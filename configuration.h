@@ -50,6 +50,7 @@
 
 /*STABILIZATION*/
 //#define PROPS_OUT
+#define STEER_MAX         100
 #define MAX_USER_POWER    0.85f
 #define IDLE_POWER        1100
 #define LOST_SIGNAL_POWER 1300
@@ -58,7 +59,7 @@
 //#define ENABLE_HEADLESS
 
 #ifdef ENABLE_AUTOLEVEL
-  #define AUTOLEVEL_STRENGTH 5.0f
+  #define AUTOLEVEL_STRENGTH 3.0f
   #define ENABLE_FAILSAFE
   #define LOST_SIGNAL_FAILSAFE_TIMEOUT 10000
 #endif
@@ -83,6 +84,13 @@
 #define FEATURE_2_BIT 2
 #define FEATURE_3_BIT 3
 
+//meh
+#define FEATURE_1(instance) (instance.buttons & 1)
+#define FEATURE_2(instance) (instance.buttons & 2)
+#define FEATURE_3(instance) (instance.buttons & 4)
+#define FEATURE_4(instance) (instance.buttons & 8)
+
+
 #define X_INDEX 0
 #define Y_INDEX 1
 #define Z_INDEX 2
@@ -95,6 +103,7 @@
 #define MOTOR_B_INDEX 1
 #define MOTOR_C_INDEX 2
 #define MOTOR_D_INDEX 3
+
 
 
 #endif

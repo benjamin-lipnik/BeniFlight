@@ -8,17 +8,16 @@
 #include "failsafe.h"
 #include "stabilization_program.h"
 
-char str[150]; //buffer za izpisovanje
 unsigned long loop_micros = 0;
 unsigned long loop_millis = 0;
 unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {1.02f, 0.0f, 16.5f, 400.0f};
-PIDProfile pitch_pid_profile = {1.02f, 0.0f, 16.5f, 400.0f};
+PIDProfile roll_pid_profile  = {0.8f, 0.0f, 16.5f, 400.0f};
+PIDProfile pitch_pid_profile = {0.8f, 0.0f, 16.5f, 400.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
-PIDProfile yaw_pid_profile   = {4.0f, 0.0f, 0.0f,  300.0f};
+PIDProfile yaw_pid_profile   = {2.0f, 0.0f, 0.0f,  300.0f};
 
 PIDProfile * pid_profiles[3] = {[ROLL_INDEX] = &roll_pid_profile, [PITCH_INDEX] = &pitch_pid_profile, [YAW_INDEX] = &yaw_pid_profile};
 
@@ -186,8 +185,9 @@ void loop() {
   Calculated_IMU_Data * calc_data = calulate_imu_data(imu_data, delta_micros * 0.000001);
 
   //FAILSAFE
-  if(abs(calc_data->world_data->roll_angle) > 70 || abs(calc_data->world_data->pitch_angle) > 70) {
-    error_handler_id(4);
+  if(abs(calc_data->world_data->roll_angle) > 80 || abs(calc_data->world_data->pitch_angle) > 80) {
+    if(!(FEATURE_1(radio_data) || FEATURE_2(radio_data))) //FEATURE 2 -> ACRO MODE
+      error_handler_id(4);
   }
 
   //neko funkcijo bi blo fajn met, ki bi vzela imu podatke, vhod daljinca in bi zracunala moci motorjev

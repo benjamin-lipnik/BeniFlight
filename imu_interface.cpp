@@ -18,7 +18,9 @@ static IMU_TypeDef imu_data;
 
 //callibration
 static const int16_t gyro_callib[3] = {246, 23, 20};
-static const int16_t acc_callib [3] = {-133, 29, -117};
+static const int16_t acc_callib [3] = {-177,10,-129};
+//static const int16_t acc_callib [3] = {0,0,0};
+
 
 static void write_reg(uint8_t address, uint8_t reg, uint8_t data) {
   I2C.beginTransmission(address);
@@ -79,6 +81,12 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
     value = read_reg(MPU6050_ADDRESS, 0x3B + 2*i) << 8 | read_reg(MPU6050_ADDRESS, 0x3B + 2*i + 1);
     value += acc_callib[i];
     imu_data.acc_g[acc_axes[i]] = (float)value / 4096.0f;
+    //imu_data.acc_g[acc_axes[i]] = (float)value; //test
+
+    //////CALLIBRATION
+    //sprintf(str, "%d,", value);
+    //print(str);
+
 
     //gyro
     value = 0;
@@ -86,10 +94,6 @@ IMU_TypeDef * imu_read() { // fajn bi blo continuous branje podatkov ampak se mi
     value += gyro_callib[i];
     imu_data.omega_dps[gyro_axes[i]] = (float)value / 65.5f;
 
-    //////CALLIBRATION
-    //static char str[100];
-    //sprintf(str, "%d,", value);
-    //print(str);
   }
   //print((char *)"\n");
   //println(NULL);

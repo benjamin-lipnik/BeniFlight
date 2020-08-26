@@ -1,6 +1,8 @@
 #include "comm.h"
 #include <Arduino.h>
 
+char str[150];
+
 uint8_t print_init(void * params) {
 #ifdef ENABLE_PRINTING
 
@@ -10,16 +12,16 @@ uint8_t print_init(void * params) {
   return INIT_OK;
 }
 
-void print(char * str) {
+void print(char * string) {
 #ifdef ENABLE_PRINTING
-  if(str)
-    Serial.print(str);
+  if(string)
+    Serial.print(string);
 
 #endif
 }
 
-void println (char * str) {
-  print(str);
+void println (char * string) {
+  print(string);
   print((char *)"\n\r");
 }
 

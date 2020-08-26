@@ -88,10 +88,10 @@ Radio_pkg * radio_read() {
   radio_data.buttons = 0;
   radio_data.buttons |= (ibus_rx[4] > 1100) << ARM_BIT;
 
-  if(ibus_rx[5] > 1100)
-    radio_data.buttons |= (1 << FEATURE_1_BIT); //FEATURE
-  else if(ibus_rx[5] > 1600)
+  if(ibus_rx[5] > 1600)
     radio_data.buttons |= (1 << FEATURE_2_BIT);
+  else if(ibus_rx[5] > 1100)
+    radio_data.buttons |= (1 << FEATURE_1_BIT); //FEATURE
 
   return &radio_data;
 }

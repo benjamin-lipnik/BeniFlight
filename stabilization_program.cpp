@@ -1,6 +1,7 @@
 #include "stabilization_program.h"
 #include <math.h>
 #include <Arduino.h>
+#include "comm.h"
 
 // PI / 180
 #define DEG_TO_RAD  (0.0174532925f)
@@ -23,7 +24,7 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   world_data.pitch_angle += imu_data->omega_dps[PITCH_INDEX] * delta_time;
   world_data.roll_angle  += imu_data->omega_dps[ROLL_INDEX]  * delta_time;
   //test
-  //world_data.yaw_angle += imu_data->omega_dps[YAW_INDEX] * delta_time;
+  world_data.yaw_angle += imu_data->omega_dps[YAW_INDEX] * delta_time;
 
   float koeficient = sin(imu_data->omega_dps[YAW_INDEX] * delta_time * DEG_TO_RAD);
   world_data.pitch_angle -= world_data.roll_angle  * koeficient;
@@ -33,20 +34,31 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   float angle_pitch_acc = -atan2f(imu_data->acc_g[ROLL_INDEX],  imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG; //in deg
   float angle_roll_acc  =  atan2f(imu_data->acc_g[PITCH_INDEX], imu_data->acc_g[YAW_INDEX]) * RAD_TO_DEG;
 
+  //TEST
+  //angle_roll_acc  +=  10;
+  //angle_pitch_acc += -6;
+  //TEST_END
+
+
   //GYRO_ACC_FUSION
   //good values: 0.9997 & 0.0003
-  world_data.pitch_angle = (world_data.pitch_angle * 0.9997) + (angle_pitch_acc * 0.0003);
-  world_data.roll_angle  = (world_data.roll_angle  * 0.9997) + (angle_roll_acc  * 0.0003);
+  world_data.pitch_angle = (world_data.pitch_angle * 0.9995) + (angle_pitch_acc * 0.0005);
+  world_data.roll_angle  = (world_data.roll_angle  * 0.9995) + (angle_roll_acc  * 0.0005);
 
   //test
   //world_data.pitch_angle = angle_pitch_acc;
   //world_data.roll_angle =  angle_roll_acc;
+
+  //sprintf(str, "g: %.2f, %.2f, a: %.2f, %.2f ", world_data.pitch_angle, world_data.roll_angle, angle_pitch_acc, angle_roll_acc);
+  //println(str);
 
 
   //HEADING CALC / MAGNETOMETER CALC
 
   //float mag_pitch = -world_data.roll_angle  * DEG_TO_RAD;
   //float mag_roll  =  world_data.pitch_angle * DEG_TO_RAD;
+
+  /*
 
   float mag_pitch =  world_data.pitch_angle * DEG_TO_RAD;
   float mag_roll  =  world_data.roll_angle  * DEG_TO_RAD;
@@ -70,7 +82,7 @@ Calculated_IMU_Data * calulate_imu_data(IMU_TypeDef * imu_data, float delta_time
   if(tmp_heading > 360) tmp_heading -= 360;
 
   world_data.heading_angle = tmp_heading;
-
+  */
 
 
   return &calc_data;
@@ -92,9 +104,9 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg radi
     return motor_powers;
   }
 
-  float pid_roll_setpoint  = map(radio_data.roll,  1000, 2000, -165,  165);
-  float pid_pitch_setpoint = map(radio_data.pitch, 1000, 2000,  165, -165);
-  float pid_yaw_setpoint   = map(radio_data.yaw,   1000, 2000, -165,  165);
+  float pid_roll_setpoint  = map(radio_data.roll,  1000, 2000, -STEER_MAX,  STEER_MAX);
+  float pid_pitch_setpoint = map(radio_data.pitch, 1000, 2000,  STEER_MAX, -STEER_MAX);
+  float pid_yaw_setpoint   = map(radio_data.yaw,   1000, 2000, -STEER_MAX,  STEER_MAX);
 
 #if defined HEADLESS
   if(radio_data.buttons & (1<<FEATURE_1_BIT)) { //HEADLESS
@@ -122,9 +134,14 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg radi
 
 
 #ifdef ENABLE_AUTOLEVEL
-  pid_roll_setpoint  -= imu_data->world_data->roll_angle  * AUTOLEVEL_STRENGTH;
-  pid_pitch_setpoint -= imu_data->world_data->pitch_angle * AUTOLEVEL_STRENGTH;
+  if(!(radio_data.buttons & _BV(FEATURE_2_BIT))) {
+    pid_roll_setpoint  -= imu_data->world_data->roll_angle  * AUTOLEVEL_STRENGTH;
+    pid_pitch_setpoint -= imu_data->world_data->pitch_angle * AUTOLEVEL_STRENGTH;
+  }
 #endif
+
+  //test
+  pid_yaw_setpoint -= imu_data->world_data->yaw_angle * 1.2f;
 
   float roll_correction  = pid_calculate(pid_profiles[ROLL_INDEX],  imu_data->omega_pid_input[ROLL_INDEX],  pid_roll_setpoint,  delta_time);
   float pitch_correction = pid_calculate(pid_profiles[PITCH_INDEX], imu_data->omega_pid_input[PITCH_INDEX], pid_pitch_setpoint, delta_time);
@@ -148,7 +165,6 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg radi
   motor_powers[MOTOR_D_INDEX] = radio_data.power - roll_correction - pitch_correction - yaw_correction;
 
   for(uint8_t i = 0; i < 4; i++) {
-
     if(motor_powers[i] > 2000)
       motor_powers[i] = 2000;
     if(motor_powers[i] < IDLE_POWER)
