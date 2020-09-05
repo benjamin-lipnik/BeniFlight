@@ -159,10 +159,12 @@ uint16_t * calculate_motor_powers(Calculated_IMU_Data * imu_data, Radio_pkg radi
   yaw_correction = -yaw_correction;
 #endif
 
+
   motor_powers[MOTOR_A_INDEX] = radio_data.power + roll_correction + pitch_correction - yaw_correction;
   motor_powers[MOTOR_B_INDEX] = radio_data.power - roll_correction + pitch_correction + yaw_correction;
   motor_powers[MOTOR_C_INDEX] = radio_data.power + roll_correction - pitch_correction + yaw_correction;
   motor_powers[MOTOR_D_INDEX] = radio_data.power - roll_correction - pitch_correction - yaw_correction;
+
 
   for(uint8_t i = 0; i < 4; i++) {
     if(motor_powers[i] > 2000)

@@ -14,8 +14,8 @@ unsigned long delta_micros = 0;
 unsigned long last_radio_update = 0;
 
 //PIDProfile roll_pid_profile  = {1.3f, 0.005f, 16.5f, 400.0f};
-PIDProfile roll_pid_profile  = {0.8f, 0.0f, 16.5f, 400.0f};
-PIDProfile pitch_pid_profile = {0.8f, 0.0f, 16.5f, 400.0f};
+PIDProfile roll_pid_profile  = {0.8f, 0.0f, 16.5f, 520.0f};
+PIDProfile pitch_pid_profile = {0.8f, 0.0f, 16.5f, 520.0f};
 //PIDProfile yaw_pid_profile   = {2.0f, 0.002f, 0.0f,  300.0f};
 PIDProfile yaw_pid_profile   = {2.0f, 0.0f, 0.0f,  300.0f};
 
